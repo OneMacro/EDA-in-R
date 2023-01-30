@@ -1,0 +1,105 @@
+---
+title: "Estimating Wharton Radio Listeners"
+output: 
+  pdf_document:
+    number_sections: yes
+    toc: yes
+    toc_depth: '4'
+urlcolor: blue
+editor_options: 
+  chunk_output_type: inline
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo=TRUE)#,fig.width = 8, fig.height=4)
+options(scipen=0,digits=3)
+if(!require('pacman'))
+{
+  install.packages('pacman')
+}
+pacman::p_load(ggplot2, dplyr, tidyverse, gridExtra, ggrepel, plotly, skimr, tidytext)
+getwd()
+data <- read.csv("Survey_results_final.csv", header=T, stringsAsFactors = FALSE)
+names(data)
+```
+
+
+### 2.1 (1)
+```{r}
+data<-data %>% select(WorkTimeInSeconds,Answer.Age:Answer.Wharton.Radio)
+names(data)
+```
+```{r}
+colnames(data) <- c("worktime","age","education","gender","income","sirius","wharton")
+skimr::skim(data)
+```
+### 2.1 (2)
+```{r}
+data[data==""]<-NA
+data$age <- as.numeric(as.character(data$age))
+data$worktime <- as.numeric(data$worktime)
+
+data$age[is.na(data$age)] <- mean(data$age, na.rm = TRUE)
+data <- data[complete.cases(data),]
+data <- data %>% filter(age>=18 & age<=125 & !(wharton=="Yes" & sirius=="No"))
+
+data[,c("education","gender","income","sirius","wharton")]<-lapply(data[,c("education","gender","income","sirius","wharton")],as.factor)
+
+skimr::skim(data)
+str(data)
+```
+### 2.1 (3)
+```{r}
+p1 <- ggplot(data) +
+  geom_histogram(aes(x=worktime), bins=30, fill= "light blue" ) +
+  labs( title = "Histogram of Work Time", x = "Work Time" , y = "Frequency")
+
+p2 <- ggplot(data) +
+  geom_histogram(aes(x=age), bins=30, fill= "light blue" ) +
+  labs( title = "Histogram of Age", x = "Age" , y = "Frequency")
+
+grid.arrange(p1, p2, ncol = 2)
+
+ggplot(data)+
+  geom_bar(aes(x=education),fill="light green")+
+  labs( title = "Barplot of Education", x= "Education Level", y="Frequency")+
+  theme(axis.text.x = element_text(angle=45, hjust=1))
+
+ggplot(data)+
+  geom_bar(aes(x=gender),fill="light green")+
+  labs( title = "Barplot of Gender", x= "Gender", y="Frequency")+
+  theme(axis.text.x = element_text(angle=45, hjust=1))
+
+ggplot(data)+
+  geom_bar(aes(x=income),fill="light green")+
+  labs( title = "Barplot of Income", x= "Income", y="Frequency")+
+  theme(axis.text.x = element_text(angle=45, hjust=1))
+
+p3 <- ggplot(data)+
+  geom_bar(aes(x=wharton),fill="light yellow")+
+  labs( title = "Barplot of Wharton Listeners", x= "Wharton Listeners", y="Frequency")+
+  theme(axis.text.x = element_text(angle=45, hjust=1))
+
+p4 <- ggplot(data)+
+  geom_bar(aes(x=sirius),fill="light yellow")+
+  labs( title = "Barplot of Sirius Listeners", x= "Sirius Listeners", y="Frequency")+
+  theme(axis.text.x = element_text(angle=45, hjust=1))
+
+grid.arrange(p3,p4,ncol=2)
+```
+USA has 98 females for 100 males, so this is not a representative dataset.
+
+https://www.statista.com/graphic/1/203183/percentage-distribution-of-household-income-in-the-us.jpg is the actual distribution of household income in the US. This doesn't match with the dataset, as there are significantly fewer <$150k households
+
+https://www.researchgate.net/profile/Michael-Esterman/publication/280866832/figure/fig1/AS:601625316061200@1520450061940/Histogram-showing-the-age-distribution-of-participants.png shows age distribution of US. This is ok.
+
+```{r}
+sum(data$wharton =="Yes")
+sum(data$wharton =="No")
+#nrow(df)
+sum(data$sirius =="Yes")
+sum(data$sirius =="No")
+#nrow(df)
+```
+Now, 68/(68+1675)*Population of US = No. of people who listen to Wharton Radio
+
