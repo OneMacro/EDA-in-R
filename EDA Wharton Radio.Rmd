@@ -24,7 +24,7 @@ names(data)
 ```
 
 
-### 2.1 (1)
+
 ```{r}
 data<-data %>% select(WorkTimeInSeconds,Answer.Age:Answer.Wharton.Radio)
 names(data)
@@ -33,7 +33,8 @@ names(data)
 colnames(data) <- c("worktime","age","education","gender","income","sirius","wharton")
 skimr::skim(data)
 ```
-### 2.1 (2)
+
+
 ```{r}
 data[data==""]<-NA
 data$age <- as.numeric(as.character(data$age))
@@ -48,7 +49,8 @@ data[,c("education","gender","income","sirius","wharton")]<-lapply(data[,c("educ
 skimr::skim(data)
 str(data)
 ```
-### 2.1 (3)
+
+
 ```{r}
 p1 <- ggplot(data) +
   geom_histogram(aes(x=worktime), bins=30, fill= "light blue" ) +
@@ -102,4 +104,3 @@ sum(data$sirius =="No")
 #nrow(df)
 ```
 Now, 68/(68+1675)*Population of US = No. of people who listen to Wharton Radio
-
