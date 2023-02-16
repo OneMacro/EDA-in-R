@@ -46,12 +46,10 @@ bb$number<-bb$win_num/bb$win_pct #making sure that number of games is constant
 bb[1:50,]
 head(bb)
 ```
-### 4.1 (A)
 
 The utility function is better approximated by log or sqrt, than by a straight line, so log is more appropriate here.
 
 
-### 4.1 (B)
 
 ```{r}
 bb$diff_one_year <- NA
@@ -65,7 +63,6 @@ bb$diff_percent_win_num <- (bb$win_num/lag(bb$win_num)-1)*100
 bb[1:50,]
 ```
 
-### 4.1 (C)
 
 ```{r}
 
@@ -86,7 +83,6 @@ bb_new <- bb_new[complete.cases(bb_new), ]
 bb_new[1:50,]
 ```
 
-### 4.2
 
 ```{r}
 b<-bb_new %>% select(team, year, win_num, payroll) %>% filter (year==2010 | year == 2014)
@@ -101,19 +97,18 @@ b<- b %>% select(team, five_year_win_inc, five_year_log_pay_inc)
 b[1:50,]
 ```
 
-### 4.2 (A)
 ```{r}
 b <- b[complete.cases(b),]
 b <- b %>% arrange(-five_year_log_pay_inc)
 b[1:5,]
 ```
 
-### 4.2 (B)
+
 ```{r}
 b <- b %>% arrange(-five_year_win_inc)
 b[1:5,]
 ```
-### 4.3
+
 ```{r}
 b_three<- bb %>% select(team, year, payroll, diff_log_one_year, diff_percent_win_num)
 b_three <- b_three %>% filter (year>1998)
@@ -162,7 +157,7 @@ p <- b_three %>%
 ggplotly(p)
 ```
 
-### 4.4
+
 ```{r}
 b_three %>%
   ggplot(aes(x=payroll, y=diff_percent_win_num, group=team, color=team))+
@@ -190,5 +185,4 @@ ggplotly(p)
 
 ```
 
-### 4.4
 On comparing these graphs with those from the prior chunk, we note that the regression slopes are flatter here, indicating that the former is better at explaining performance.
